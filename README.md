@@ -1,22 +1,67 @@
-# pymongo-api
+# users-api
 
-## Как запустить
+## Как настроить
 
 Запускаем mongodb и приложение
 
 ```shell
-docker compose up -d
+docker compose -f ./sharding-repl-cache/compose.yaml up --build -d
 ```
 
-Заполняем mongodb данными
+Настраиваем сервер конфигурации mongodb
 
 ```shell
-./scripts/mongo-init.sh
+./sharding-repl-cache/scripts/mongo-init-cfg.sh
 ```
 
-## Как проверить
+Настраиваем шарды
+
+```shell
+./sharding-repl-cache/scripts/mongo-init.sh
+```
+
+Заполняем шарды данныими и проверяем шардирование
+
+```shell
+./sharding-repl-cache/scripts/mongo-check.sh
+```
+После выполнения скрипта данные должны распределится по шардам в соотношение 508 и 492 записи
+
+Настраиваем кэширование
+
+```shell
+./sharding-repl-cache/scripts/redis-init.sh
+```
+
+Останавливаем 
+
+```shell
+docker compose -f ./sharding-repl-cache/compose.yaml stop
+```
+
+## Как запустить и проверить кэширование
+Выполняем команду
+
+```shell
+docker compose -f ./sharding-repl-cache/compose.yaml up -d
+```
+
+Проверяем время отклика через запрос списка пользователей
+
+http://localhost:8080/docs#/default/list_users__collection_name__users_get
+
+Второй и все последующие запросы должны проходить значительно быстрее первого
+
+Останавливаем 
+
+```shell
+docker compose -f ./sharding-repl-cache/compose.yaml stop
+```
+
+
 
 ### Если вы запускаете проект на локальной машине
+
 
 Откройте в браузере http://localhost:8080
 
